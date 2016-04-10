@@ -38,15 +38,17 @@ type Client struct {
 	Client   *torrent.Client
 	Torrent  *torrent.Torrent
 	Progress int64
+	Host     string
 	Port     int
 }
 
 // NewClient creates a new torrent client based on a magnet or a torrent file.
 // If the torrent file is on http, we try downloading it.
-func NewClient(torrentPath string, port int, seed bool, tcp bool) (client Client, err error) {
+func NewClient(torrentPath string, host string, port int, seed bool, tcp bool) (client Client, err error) {
 	var t *torrent.Torrent
 	var c *torrent.Client
 
+	client.Host = host
 	client.Port = port
 
 	// Create client.
@@ -189,7 +191,7 @@ func (c *Client) Render() {
 	fmt.Println(t.Info().Name)
 	fmt.Println("=============================================================")
 	if c.ReadyForPlayback() {
-		fmt.Printf("Stream: \thttp://localhost:%d\n", c.Port)
+		fmt.Printf("Stream: \thttp://%s:%d\n", c.Host, c.Port)
 	}
 
 	if currentProgress > 0 {

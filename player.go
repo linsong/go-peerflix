@@ -37,7 +37,7 @@ func (p GenericPlayer) Open(url string) error {
 }
 
 // openPlayer opens a stream using the specified player and port.
-func openPlayer(playerName string, port int) {
+func openPlayer(playerName string, host string, port int) {
 	var player Player
 	playerName = strings.ToLower(playerName)
 	for _, genericPlayer := range genericPlayers {
@@ -50,7 +50,7 @@ func openPlayer(playerName string, port int) {
 		return
 	}
 	log.Printf("Playing in %s", playerName)
-	if err := player.Open("http://localhost:" + strconv.Itoa(port)); err != nil {
+	if err := player.Open("http://" + host + ":" + strconv.Itoa(port)); err != nil {
 		log.Printf("Error opening %s: %s\n", playerName, err)
 	}
 }

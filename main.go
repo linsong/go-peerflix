@@ -23,8 +23,10 @@ func main() {
 	var port int
 	var seed, tcp *bool
 	var player *string
+	var host *string
 
 	player = flag.String("player", "", "Open the stream with a video player ("+joinPlayerNames()+")")
+	host = flag.String("host", "localhost", "Host to stream the video on")
 	flag.IntVar(&port, "port", 8080, "Port to stream the video on")
 	seed = flag.Bool("seed", false, "Seed after finished downloading")
 	tcp = flag.Bool("tcp", true, "Allow connections via TCP")
@@ -35,7 +37,7 @@ func main() {
 	}
 
 	// Start up the torrent client.
-	client, err := NewClient(flag.Arg(0), port, *seed, *tcp)
+	client, err := NewClient(flag.Arg(0), *host, port, *seed, *tcp)
 	if err != nil {
 		log.Fatalf(err.Error())
 		os.Exit(exitErrorInClient)
@@ -44,7 +46,7 @@ func main() {
 	// Http handler.
 	go func() {
 		http.HandleFunc("/", client.GetFile)
-		log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), nil))
+		log.Fatal(http.ListenAndServe((*host)+":"+strconv.Itoa(port), nil))
 	}()
 
 	// Open selected video player
@@ -53,7 +55,7 @@ func main() {
 			for !client.ReadyForPlayback() {
 				time.Sleep(time.Second)
 			}
-			openPlayer(*player, port)
+			openPlayer(*host, *player, port)
 		}()
 	}
 
